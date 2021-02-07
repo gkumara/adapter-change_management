@@ -144,8 +144,6 @@ class ServiceNowAdapter extends EventEmitter {
    *
    * @param {ServiceNowAdapter~requestCallback} callback - The callback that
    *   handles the response.
-   * @param {*} callback.data - The API's response. 
-   * @param {error} callback.error - The error property of callback.
    */
   getRecord(callback) {
     /**
@@ -155,28 +153,7 @@ class ServiceNowAdapter extends EventEmitter {
      * get() takes a callback function.     
     * this.connector.get((results, error) => callback(results, error));
     */
-   
-        // this.data = callback.data;
-        // this.error = callback.error;
-        // this.connector.get(data, error);
-        this.connector.get( (data, error) => {
-            if (data.has('body')) {
-            const bodyObj = JSON.parse(data['body']);
-            const results = bodyObj['result'];
-            const newResults = results.map(item => {
-                const container = {};
-                container['change_ticket_number'] = item['number'];
-                container['active'] = item['active'];
-                container['priority'] = item['priority'];
-                container['description'] = item['description'];
-                container['work_start'] = item['work_start'];
-                container['work_end'] = item['work_end'];
-                container['change_ticket_key'] = item['sys_id'];
-            });
-            return newResults;
-            };
-        });
-    }
+  }
 
   /**
    * @memberof ServiceNowAdapter
@@ -195,25 +172,7 @@ class ServiceNowAdapter extends EventEmitter {
      * post() takes a callback function.     
      * this.connector.post((results, error) => callback(results, error));
      */
-    //   this.data = callback.data;
-    //     this.error = callback.error;
-    //     this.connector.post(data, error);
-    this.connector.post( (data, error) => {
-            if (data.has('body')) {
-            const bodyObj = JSON.parse(data['body']);
-            const item = bodyObj['result'];
-            const container = {};
-            container['change_ticket_number'] = item['number'];
-            container['active'] = item['active'];
-            container['priority'] = item['priority'];
-            container['description'] = item['description'];
-            container['work_start'] = item['work_start'];
-            container['work_end'] = item['work_end'];
-            container['change_ticket_key'] = item['sys_id'];
-            return container;
-            };
-        });
-    }
+  }
 }
 
 module.exports = ServiceNowAdapter;
