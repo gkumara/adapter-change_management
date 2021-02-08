@@ -216,4 +216,5 @@ class ServiceNowAdapter extends EventEmitter {
     }
 }
 
-module.exports = ServiceNowAdapter;
+ module.exports = ServiceNowAdapter;
+
