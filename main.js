@@ -138,6 +138,45 @@ class ServiceNowAdapter extends EventEmitter {
 
   /**
    * @memberof ServiceNowAdapter
+   * @method postRecord
+   * @summary Create ServiceNow Record
+   * @description Creates a record in ServiceNow.
+   *
+   * @param {ServiceNowAdapter~requestCallback} callback - The callback that
+   *   handles the response.
+   */
+  postRecord(callback) {
+    /**
+     * Write the body for this function.
+     * The function is a wrapper for this.connector's post() method.
+     * Note how the object was instantiated in the constructor().
+     * post() takes a callback function.     
+     * this.connector.post((results, error) => callback(results, error));
+     */
+    //   this.data = callback.data;
+    //     this.error = callback.error;
+    //     this.connector.post(data, error);
+    this.connector.post( (data, error) => {
+            if (data.has('body')) {
+            const bodyObj = JSON.parse(data['body']);
+            const item = bodyObj['result'];
+            const newResults = item.map(item => {
+            const container = {};
+            container['change_ticket_number'] = item['number'];
+            container['active'] = item['active'];
+            container['priority'] = item['priority'];
+            container['description'] = item['description'];
+            container['work_start'] = item['work_start'];
+            container['work_end'] = item['work_end'];
+            container['change_ticket_key'] = item['sys_id'];
+            });
+            return newResults;
+            }
+        });
+    }
+
+  /**
+   * @memberof ServiceNowAdapter
    * @method getRecord
    * @summary Get ServiceNow Record
    * @description Retrieves a record from ServiceNow.
@@ -178,43 +217,6 @@ class ServiceNowAdapter extends EventEmitter {
         });
     }
 
-  /**
-   * @memberof ServiceNowAdapter
-   * @method postRecord
-   * @summary Create ServiceNow Record
-   * @description Creates a record in ServiceNow.
-   *
-   * @param {ServiceNowAdapter~requestCallback} callback - The callback that
-   *   handles the response.
-   */
-  postRecord(callback) {
-    /**
-     * Write the body for this function.
-     * The function is a wrapper for this.connector's post() method.
-     * Note how the object was instantiated in the constructor().
-     * post() takes a callback function.     
-     * this.connector.post((results, error) => callback(results, error));
-     */
-    //   this.data = callback.data;
-    //     this.error = callback.error;
-    //     this.connector.post(data, error);
-    this.connector.post( (data, error) => {
-            if (data.has('body')) {
-            const bodyObj = JSON.parse(data['body']);
-            const item = bodyObj['result'];
-            const container = {};
-            container['change_ticket_number'] = item['number'];
-            container['active'] = item['active'];
-            container['priority'] = item['priority'];
-            container['description'] = item['description'];
-            container['work_start'] = item['work_start'];
-            container['work_end'] = item['work_end'];
-            container['change_ticket_key'] = item['sys_id'];
-            return container;
-            };
-        });
-    }
-}
+ }
 
  module.exports = ServiceNowAdapter;
-
