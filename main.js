@@ -158,9 +158,9 @@ class ServiceNowAdapter extends EventEmitter {
     //     this.connector.post(data, error);
     this.connector.post( (data, error) => {
             if (data.has('body')) {
-            const bodyObj = JSON.parse(data['body']);
-            const xyz = bodyObj['result'];
-            const newResults = xyz.map(item => {
+            const bodyObj = JSON.parse(data['body']);g
+            const item = bodyObj['result'];
+            const newResults = item.map(item => {
             const container = {};
             container['change_ticket_number'] = item['number'];
             container['active'] = item['active'];
