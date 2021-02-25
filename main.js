@@ -96,7 +96,46 @@ class ServiceNowAdapter extends EventEmitter {
   healthcheck(callback) {
     // We will build this method in a later lab. For now, it will emulate
     // a healthy integration by emmitting ONLINE.
-    this.emitOnline();
+     //this.emitOnline();
+     this.getRecord((result, error) => {
+    /**
+        * For this lab, complete the if else conditional
+        * statements that check if an error exists
+        * or the instance was hibernating. You must write
+        * the blocks for each branch.
+        */
+    if (error) {
+        /**
+        * Write this block.
+        * If an error was returned, we need to emit OFFLINE.
+        * Log the returned error using IAP's global log object
+        * at an error severity. In the log message, record
+        * this.id so an administrator will know which ServiceNow
+        * adapter instance wrote the log message in case more
+        * than one instance is configured.
+        * If an optional IAP callback function was passed to
+        * healthcheck(), execute it passing the error seen as an argument
+        * for the callback's errorMessage parameter.
+        */
+        this.emitOffline();
+        log.error("Error from " + this.id)
+        // callback(null, error);
+    } else {
+        /**
+        * Write this block.
+        * If no runtime problems were detected, emit ONLINE.
+        * Log an appropriate message using IAP's global log object
+        * at a debug severity.
+        * If an optional IAP callback function was passed to
+        * healthcheck(), execute it passing this function's result
+        * parameter as an argument for the callback function's
+        * responseData parameter.
+        */
+        this.emitOnline();
+        log.debug("Online");
+        // callback(result, null);
+    }
+    });
   }
 
   /**
@@ -153,23 +192,7 @@ class ServiceNowAdapter extends EventEmitter {
      * post() takes a callback function.     
      * this.connector.post((results, error) => callback(results, error));
      */
-    
-    //this.connector.post( (data, error) => {
-    //        if (data.has('body')) {
-    //        const bodyObj = JSON.parse(data['body']);g
-    //        const item = bodyObj['result'];
-    //        const newResults = item.map(item => {
-     //       const container = {};
-    //        container['change_ticket_number'] = item['number'];
-    //        container['active'] = item['active'];
-    //        container['priority'] = item['priority'];
-    //        container['description'] = item['description'];
-     //       container['work_start'] = item['work_start'];
-     //       container['work_end'] = item['work_end'];
-     //       container['change_ticket_key'] = item['sys_id'];
-     //       });
-     //       return newResults;
-     //       }
+     
        this.connector.post((data, error) => {
             if (error) {
                 // console.error(`\nError returned from POST request:\n${JSON.stringify(error)}`);
@@ -214,29 +237,35 @@ class ServiceNowAdapter extends EventEmitter {
      * get() takes a callback function.     
     * this.connector.get((results, error) => callback(results, error));
     */
-   
-        // this.data = callback.data;
-        // this.error = callback.error;
-        // this.connector.get(data, error);
-        this.connector.get( (data, error) => {
-            if (data.has('body')) {
-            const bodyObj = JSON.parse(data['body']);
-            const results = bodyObj['result'];
-            const newResults = results.map(item => {
-                const container = {};
-                container['change_ticket_number'] = item['number'];
-                container['active'] = item['active'];
-                container['priority'] = item['priority'];
-                container['description'] = item['description'];
-                container['work_start'] = item['work_start'];
-                container['work_end'] = item['work_end'];
-                container['change_ticket_key'] = item['sys_id'];
-            });
-            return newResults;
-            };
-        });
-    }
-
+           
+         this.connector.get((data, error) => {
+            if (error) {
+                // console.error(`\nError returned from GET request:\n${JSON.stringify(error)}`);
+                callback(null, error);
+            } else {
+                console.log(`\nResponse returned from GET request:\n${JSON.stringify(data)}`)
+                if (typeof data == 'object' && 'body' in data) {
+                    const body = JSON.parse(data.body);
+                    const array = body.result
+                    let newResults = []
+                    array.forEach(element => {
+                        const { number: change_ticket_number, active, priority, description, work_start, work_end, sys_id: change_ticket_key } = element
+                        const obj = {
+                        change_ticket_number,
+                        active,
+                        priority,
+                        description,
+                        work_start,
+                        work_end, 
+                        change_ticket_key
+                        }
+                        newResults.push(obj)
+                    });
+                    callback(newResults, null)
+        
+                    }
+            }
+    });
  }
-
+}
  module.exports = ServiceNowAdapter;

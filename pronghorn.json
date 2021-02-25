@@ -11,7 +11,7 @@
   "methods": [
     {
   "name": "postRecord",
-  "summary": "post Change Tickets",
+  "summary": "post Change Ticket",
   "description": "post the first ServiceNow change management ticket.",
   "input": [],
   "output": {
