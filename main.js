@@ -262,8 +262,7 @@ class ServiceNowAdapter extends EventEmitter {
                         newResults.push(obj)
                     });
                     callback(newResults, null)
-        
-                    }
+                 }
             }
     });
  }
