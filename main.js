@@ -153,24 +153,44 @@ class ServiceNowAdapter extends EventEmitter {
      * post() takes a callback function.     
      * this.connector.post((results, error) => callback(results, error));
      */
-    //   this.data = callback.data;
-    //     this.error = callback.error;
-    //     this.connector.post(data, error);
-    this.connector.post( (data, error) => {
-            if (data.has('body')) {
-            const bodyObj = JSON.parse(data['body']);g
-            const item = bodyObj['result'];
-            const newResults = item.map(item => {
-            const container = {};
-            container['change_ticket_number'] = item['number'];
-            container['active'] = item['active'];
-            container['priority'] = item['priority'];
-            container['description'] = item['description'];
-            container['work_start'] = item['work_start'];
-            container['work_end'] = item['work_end'];
-            container['change_ticket_key'] = item['sys_id'];
-            });
-            return newResults;
+    
+    //this.connector.post( (data, error) => {
+    //        if (data.has('body')) {
+    //        const bodyObj = JSON.parse(data['body']);g
+    //        const item = bodyObj['result'];
+    //        const newResults = item.map(item => {
+     //       const container = {};
+    //        container['change_ticket_number'] = item['number'];
+    //        container['active'] = item['active'];
+    //        container['priority'] = item['priority'];
+    //        container['description'] = item['description'];
+     //       container['work_start'] = item['work_start'];
+     //       container['work_end'] = item['work_end'];
+     //       container['change_ticket_key'] = item['sys_id'];
+     //       });
+     //       return newResults;
+     //       }
+       this.connector.post((data, error) => {
+            if (error) {
+                // console.error(`\nError returned from POST request:\n${JSON.stringify(error)}`);
+                 callback(data, error);
+            } else {
+                console.log(`\nResponse returned from POST request:\n${JSON.stringify(data)}`)
+                if (typeof data == 'object' && 'body' in data) {
+                    const body = JSON.parse(data.body);
+                    const result = body.result;
+                    const { number: change_ticket_number, active, priority, description, work_start, work_end, sys_id: change_ticket_key } = result;
+                    const obj = {
+                    change_ticket_number,
+                    active,
+                    priority,
+                    description,
+                    work_start,
+                    work_end, 
+                    change_ticket_key
+                    };
+                    callback(obj, error);
+                }
             }
         });
     }
