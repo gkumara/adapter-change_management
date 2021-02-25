@@ -19,7 +19,6 @@
     "type": "object",
     "description": "An object, that is a change ticket.",
     "schema": {
-      "type": "object",
       "items": {
         "title": "changeTicket",
         "$ref": "changeRequest#/definitions/changeTicket"
